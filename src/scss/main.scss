@@ -1,0 +1,197 @@
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: #1f2d2d;
+}
+
+.home-container {
+    max-width: 400px;
+    width: 100%;
+    margin: 300px auto 0px auto;
+
+    h4 {
+        text-align: center;
+
+        span {
+            margin: 0px 1px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .x-title {
+            color:#00e6e6;
+        }
+
+        .o-title {
+            color:#ffcc00;
+        }
+    }
+
+    .player-box {
+        padding: 20px;
+        background-color: #2a3c3c;
+        border-radius: 8px;
+
+        p {
+            margin: 0px 0px 5px 0px;
+            color: #fff;
+            font-size: 15px;
+            text-align: center;
+        }
+
+        .pick-player {
+            background-color: #1f2d2d;
+            padding: 5px;
+            border-radius: 5px;
+            margin: 10px 0px;
+            display: flex;
+            cursor: pointer;
+
+            p {
+                height: 30px;
+                display: flex;
+                width: 50%;
+                justify-content: center;
+                align-items: center;
+                color: #fff;
+                font-size: 20px;
+                font-weight: bold;
+                position: relative;
+                margin: 0;
+                //transition: color 500ms;
+
+                .player-selector {
+                    position: absolute;
+                    width: 100%;
+                    background-color: #fff;
+                    left: 0;
+                    top: 0;
+                    height: 100%;
+                    border-radius: 8px;
+                    transition: left 500ms;
+                }
+
+                .go-right {
+                    left: 100%;
+                }
+                
+                .choosen_player {
+                    z-index: 1;
+                    color: #1f2d2d;
+                    transition: color 500ms;
+                }
+            }
+        }
+    }
+
+    .vs-cpu {
+        background-color: #ffcc00;
+        color: #1f2d2d;
+        width: 100%;
+        padding: 10px;
+        text-align: center;
+        display: block;
+        box-sizing: border-box;
+        margin-top: 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        letter-spacing: 1px;
+        border: none;
+        cursor: pointer;
+        transition: letter-spacing 500ms, font-size 500ms;
+
+        &:hover {
+            letter-spacing: 3px;
+        }
+    }
+}
+
+.game-container {
+    max-width: 500px;
+    width: 100%;
+    margin: 300px auto 0px auto;
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        h4 {
+            span {
+                margin: 0px 1px;
+                font-size: 20px;
+                font-weight: bold;
+            }
+    
+            .x-title {
+                color:#00e6e6;
+            }
+    
+            .o-title {
+                color:#ffcc00;
+            }
+        }
+
+        .player-turn {
+            background-color: #2a3c3c;
+            color: #fff;
+            padding: 7px 15px;
+            border-radius: 5px;  
+        }
+
+        .refresh {
+            background-color: #e6ffff;
+            padding: 7px 10px;
+            color: #1f2d2d;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    }
+
+    .fields {
+        display: grid;
+        grid-template-columns: auto auto auto;
+        row-gap: 20px;
+        column-gap: 20px;
+
+        span {
+            height: 100px;
+            background-color: red;
+            border-radius: 8px;
+            background-color: #2a3c3c;
+            cursor: pointer;
+        }
+    }
+
+    .footer {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+
+        p {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: red;
+            max-width: 150px;
+            width: 100%;
+            border-radius: 8px;
+            padding: 10px 0;
+            margin: 0;
+            color: #1f2d2d;
+        }
+
+        .x-stats {
+            background-color: #00e6e6;
+        }
+
+        .ties {
+            background-color: #e6ffff;
+        }
+
+        .o-stats {
+            background-color:#ffcc00;
+        }
+    }
+}
