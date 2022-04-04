@@ -156,10 +156,27 @@ body {
 
         span {
             height: 100px;
-            background-color: red;
             border-radius: 8px;
             background-color: #2a3c3c;
             cursor: pointer;
+            position: relative;
+
+            icon {
+                font-weight: bold;
+                font-size: 35px;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+
+            .X-field {
+                color:#00e6e6;
+            }
+
+            .O-field {
+                color:#ffcc00;
+            }
         }
     }
 
