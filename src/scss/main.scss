@@ -1,8 +1,15 @@
+html {
+    display: flex;
+}
+
 body {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     background-color: #1f2d2d;
+    position: relative;
+    flex-grow: 1;
+    height: 100vh;
 }
 
 .home-container {
@@ -178,6 +185,10 @@ body {
                 color:#ffcc00;
             }
         }
+
+        .wining-field {
+            background-color: #004d66;
+        }
     }
 
     .footer {
@@ -204,11 +215,64 @@ body {
         }
 
         .ties {
-            background-color: #e6ffff;
+            background-color: #ffcc00;;
         }
 
         .o-stats {
             background-color:#ffcc00;
+        }
+    }
+}
+
+.overlay {
+    background-color: rgb(0, 19, 26, 0.6);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    z-index: 1;
+    transform: translate(-50%, -50%);
+    height: 100vh;
+
+    > div {
+        background-color: #004d66;
+        padding: 50px 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        p {
+            color: #e6ffff;
+            margin: 0;
+        }
+        h1 {
+            color: #00e6e6;
+            font-weight: bolder;
+            margin: 30px 0;
+        }
+
+        .buttons {
+            display: flex;
+
+            .quit {
+                background-color: #e6ffff;
+                padding: 10px;
+                border-radius: 8px;
+                margin: 0 10px;
+            }
+
+            .next-round {
+                background-color: #ffcc00;;
+                padding: 10px;
+                border-radius: 8px;
+                margin: 0 10px
+            }
         }
     }
 }

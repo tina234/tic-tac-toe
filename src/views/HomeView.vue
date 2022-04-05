@@ -7,48 +7,59 @@
 		<div class="player-box">
 			<p>PICK PLAYERS MARK</p>
 			<div class="pick-player"> 
-			<p @click="choosePlayer('x')">
-				<span :class="{ 'choosen_player' : player_x }">X</span>
-				<span class="player-selector" :class="{ 'go-right' : player_o }"></span>
+			<p @click="choosePlayer('X')">
+				<span :class="[ player_choice == 'X' ? 'choosen_player' : '']">X</span>
+				<span class="player-selector" :class="[ player_choice == 'O' ? 'go-right' : '']"></span>
 			</p>
-			<p @click="choosePlayer('o')">
-				<span :class="{ 'choosen_player' : player_o }">O</span>
+			<p @click="choosePlayer('O')">
+				<span :class="[ player_choice == 'O' ? 'choosen_player' : '']">O</span>
 			</p>
 			</div>
 			<p>Remeber : X goes first</p>
 		</div>
 		<button class="vs-cpu" @click="changePage()">NEW GAME (VS CPU)</button>
+		<button class="vs-cpu" @click="changePage(true)">NEW GAME (VS P2)</button>
 	</div>
 
 	<div class="game-container" v-if="!home">
+		<div class="overlay" v-if="game_finished">
+			<div>
+				<p>{{ whoWon() }}</p>
+				<h1>{{ message }}</h1>
+				<div class="buttons">
+					<span class="quit" @click="quit()">QUIT</span>
+					<span class="next-round" @click="refreshGame()">NEXT ROUND</span>
+				</div>
+			</div>
+		</div>
 		<div class="header">
-		<h4 class="home-title">
-			<span class="x-title">X</span>
-			<span class="o-title">O</span>
-		</h4>
-		<span class="player-turn">{{ player_turn }} turn</span>
-		<span class="refresh" @click="refreshGame()">R</span>
+			<h4 class="home-title">
+				<span class="x-title">X</span>
+				<span class="o-title">O</span>
+			</h4>
+			<span class="player-turn">{{ player_turn }} turn</span>
+			<span class="refresh" @click="refreshGame()">R</span>
 		</div>
 
 		<div class="fields">
-		<span v-for="n in 9" :key="n" :data-field="n" @click="selectField(n)">
-			<icon :class="[ selected_fields[n] + '-field']">{{ selected_fields[n] }}</icon>
-		</span>
+			<span v-for="n in 9" :key="n" :data-field="n" :class="[  wining_combination.includes(n) ? 'wining-field' : '' ]" @click="selectField(n)">
+				<icon :class="[ selected_fields[n] + '-field' ]">{{ selected_fields[n] }}</icon>
+			</span>
 		</div>
 
 		<div class="footer">
-		<p class="x-stats">
-			<span>X(you)</span>
-			<span>{{ player_x_wins }}</span>
-		</p>
-		<p class="ties">
-			<span>Ties</span>
-			<span>{{ ties }}</span>
-		</p>
-		<p class="o-stats">
-			<span>O (CPU)</span>
-			<span>{{ player_o_wins }}</span>
-		</p>
+			<p class="x-stats">
+				<span>X ({{ player_choice == 'X' ? 'P1' : player_2 ? 'P2' : 'CPU' }})</span>
+				<span>{{ player_x_wins }}</span>
+			</p>
+			<p class="ties">
+				<span>Ties</span>
+				<span>{{ ties }}</span>
+			</p>
+			<p class="o-stats">
+				<span>O ({{ player_choice == 'O' ? 'P1' : player_2 ? 'P2' : 'CPU' }})</span>
+				<span>{{ player_o_wins }}</span>
+			</p>
 		</div> 
 	</div>
 </template>
@@ -60,36 +71,36 @@ export default {
 	data() {
 		return {
 			home: true,
-			player_x : true,
-			player_o : false,
+			player_choice: 'X',
 			player_turn: 'X',
 			selected_fields: {},
+			available_fields : [1,2,3,4,5,6,7,8,9],
 			win_combinations: [ [1,2,3], [4,5,6], [7,8,9], [1,4,7], [2,5,8], [3,6,9], [1,5,9], [3,5,7]],
 			player_x_wins : 0,
 			ties: 0,
 			player_o_wins : 0,
 			game_finished : false,
+			message: '',
+			player_2 : false,
+			wining_combination : [],
+			player_won: '',
 		}
 	},
 	methods: {
 		choosePlayer(player_mark) {
-			if (player_mark == 'x') {
-				this.player_x = true;
-				this.player_o = false;
-			} else {
-				this.player_x = false;
-				this.player_o = true;
-			}
+			this.player_choice = player_mark;
 		},
 
-		changePage(){
+		changePage(p2=false){
 			this.home = false;
+			this.player_2 = p2;
 		},
 
 		selectField(field_number) {
 			if(this.selected_fields[field_number] === undefined && !this.game_finished){
 				this.selected_fields[field_number] = this.player_turn;
-
+				this.available_fields.splice(this.available_fields.indexOf(field_number), 1);
+			
 				if (this.player_turn == 'X') {
 					this.player_turn = 'O';
 				} else {
@@ -99,7 +110,7 @@ export default {
 				this.checkWin();
 			}
 
-			if(this.player_turn == 'O'){
+			if(this.player_turn != this.player_choice && !this.game_finished && !this.player_2){
 				this.cpuPlay();
 			}
 		},
@@ -108,6 +119,19 @@ export default {
 			this.selected_fields = {};
 			this.player_turn = 'X';
 			this.game_finished = false;
+			this.available_fields = [1,2,3,4,5,6,7,8,9];
+			this.wining_combination = [];
+			if(this.player_choice != this.player_turn && !this.player_2) {
+				setTimeout(() => {
+					this.cpuPlay();
+				}, 200);
+			}
+		},
+
+		restartScore() {
+			this.player_x_wins = 0;
+			this.ties = 0;
+			this.player_o_wins = 0;
 		},
 
 		checkWin() {
@@ -130,9 +154,14 @@ export default {
 					if(x_won || o_won) {
 						if(x_won) {
 							this.player_x_wins++;
+							this.player_won = 'X';
+							this.message = 'X TAKES THE ROUND';
 						} else if(o_won){
 							this.player_o_wins++;
+							this.player_won = 'O';
+							this.message = 'O TAKES THE ROUND';
 						}
+						this.wining_combination = combination;
 						this.game_finished = true;
 						return;
 					}
@@ -140,16 +169,48 @@ export default {
 
 				if(Object.keys(this.selected_fields).length === 9 && (!x_won && !o_won)) {
 					this.ties++;
-					this.game_finished;
+					this.message = 'IT\'S A TIE';
+					this.game_finished = true;
 				}
 			}
 		},
 
 		cpuPlay() {
-			//random bi trebalo odabrati od dostupnih brojeva
-			let test = Math.floor(Math.random() * 9) + 1;
-			this.selectField(test);
+			if(this.available_fields.length > 0){
+				let random_field = this.available_fields[Math.floor(Math.random() * this.available_fields.length)];
+				setTimeout(() => {
+					this.selectField(random_field);
+				}, 700);
+			}
+		},
+
+		quit() {
+			this.home = true;
+			this.refreshGame();
+			this.restartScore();
+		},
+
+		whoWon() {
+			if (this.player_won != '') {
+				//netko je pobjedio
+				if(this.player_choice == this.player_won){
+					return 'Player 1 won';
+				} else {
+					return (this.player_2 == true ) ? 'Player 2 won' : 'CPU won';
+				}
+			} else {
+				return 'NOBODY WON';
+			}
 		}
 	},
+	watch: {
+		home: {
+			handler: function(val, oldVal) {
+				if(val == false && this.player_choice != this.player_turn && !this.player_2) {
+					this.cpuPlay();
+				}
+			},
+		}	
+    },
 }
 </script>
