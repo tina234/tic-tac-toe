@@ -21,7 +21,7 @@
 
 		<div class="fields">
 			<span v-for="n in 9" :key="n" :data-field="n" :class="[  wining_combination.includes(n) ? 'wining-field' : '' ]" @click="selectField(n)">
-				<icon :class="[ selected_fields[n] + '-field' ]">{{ selected_fields[n] }}</icon>
+				<span :class="[ get_mark(n) + '-field' ]">{{ get_mark(n) }}</span>
 			</span>
 		</div>
 
@@ -47,7 +47,10 @@ export default {
     data() {
 		return {
 			player_turn: 'X',
-			selected_fields: {},
+			selected_fields: { 
+				'X': [],
+				'O': [],
+			},
 			available_fields : [1,2,3,4,5,6,7,8,9],
 			win_combinations: [ [1,2,3], [4,5,6], [7,8,9], [1,4,7], [2,5,8], [3,6,9], [1,5,9], [3,5,7]],
 			player_x_wins : 0,
@@ -61,25 +64,25 @@ export default {
 	},
     methods: {
         selectField(field_number) {
-			if(this.selected_fields[field_number] === undefined && !this.game_finished){
-				this.selected_fields[field_number] = this.player_turn;
-				this.available_fields.splice(this.available_fields.indexOf(field_number), 1);
-			
-				if (this.player_turn == 'X') {
-					this.player_turn = 'O';
-				} else {
-					this.player_turn = 'X';
-				}
-
-				this.checkWin();
+			if (!this.available_fields.includes(field_number) || this.game_finished) {
+				return;
 			}
+			
+			this.selected_fields[this.player_turn].push(field_number); 
+			this.available_fields.splice(this.available_fields.indexOf(field_number), 1);
+			this.player_turn = this.player_turn == 'X' ? 'O' : 'X';
+
+			this.checkWin();
 
 			if(this.player_turn != this.$parent.player_choice && !this.game_finished && !this.$parent.player_2){
 				this.cpuPlay();
 			}
 		},
         refreshGame() {
-			this.selected_fields = {};
+			this.selected_fields = {
+				'X': [],
+				'O': [],
+			};
 			this.player_turn = 'X';
 			this.game_finished = false;
 			this.available_fields = [1,2,3,4,5,6,7,8,9];
@@ -97,43 +100,39 @@ export default {
 			this.player_o_wins = 0;
 		},
         checkWin() {
-			if(Object.keys(this.selected_fields).length > 2) {
-				let selected_pairs = {
-					'O' : [],
-					'X' : [],
-				};
-				let x_won = false;
-				let o_won = false;
+			let x_won = false;
+			let o_won = false;
 
-				for (const field_number in this.selected_fields) {
-					selected_pairs[this.selected_fields[field_number]].push(parseInt(field_number));
-				}
-
-				this.win_combinations.forEach(combination => {
-					x_won = combination.every(number => selected_pairs['X'].includes(number));
-					o_won = combination.every(number => selected_pairs['O'].includes(number));
-
-					if(x_won || o_won) {
-						if(x_won) {
-							this.player_x_wins++;
-							this.player_won = 'X';
-							this.message = 'X TAKES THE ROUND';
-						} else if(o_won){
-							this.player_o_wins++;
-							this.player_won = 'O';
-							this.message = 'O TAKES THE ROUND';
-						}
-						this.wining_combination = combination;
-						this.game_finished = true;
-						return;
-					}
-				});
-
-				if(Object.keys(this.selected_fields).length === 9 && (!x_won && !o_won)) {
-					this.ties++;
-					this.message = 'IT\'S A TIE';
+			this.win_combinations.every(combination => {
+				x_won = combination.every(number => { return this.selected_fields['X'].includes(number)});
+				console.log(x_won, this.selected_fields);
+				o_won = combination.every(number => { return this.selected_fields['O'].includes(number)});
+				if (x_won || o_won) {
 					this.game_finished = true;
+					this.wining_combination = combination;
+					return false;
 				}
+
+				return true;
+			});
+
+			if(x_won || o_won) {
+				if(x_won) {
+					this.player_x_wins++;
+					this.player_won = 'X';
+					this.message = 'X TAKES THE ROUND';
+				} else if(o_won){
+					this.player_o_wins++;
+					this.player_won = 'O';
+					this.message = 'O TAKES THE ROUND';
+				}
+				return;
+			}
+
+			if(this.available_fields.length < 1 && (!x_won && !o_won)) {
+				this.ties++;
+				this.message = 'IT\'S A TIE';
+				this.game_finished = true;
 			}
 		},
 
@@ -162,19 +161,23 @@ export default {
 			} else {
 				return 'NOBODY WON';
 			}
-		}
+		},
+
+		get_mark(field_num) {
+			let selected_mark = '';
+			for (const mark in this.selected_fields) {
+				if (this.selected_fields[mark].includes(field_num)) {
+					selected_mark = mark;
+				}
+			}
+
+			return selected_mark;
+		},
     },
     mounted() {
         if(this.$parent.player_choice != this.player_turn && !this.$parent.player_2) {
             this.cpuPlay();
-        }
-
-		let window_height = window.innerHeight;
-		if(this.$refs.gameCont != undefined) {
-			let game_height = this.$refs.gameCont.clientHeight;
-			this.margin_top = (window_height - game_height) / 2 + 'px';
-		}
-		
+        }	
 	}
 }
 </script>

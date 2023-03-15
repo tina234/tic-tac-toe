@@ -1,36 +1,28 @@
 <template>
-	<HomeContainer v-if="home" />
-	<GameContainer v-if="!home" />
+	<div class="home-container">
+		<h4 class="home-title">
+			<span class="x-title">X</span>
+			<span class="o-title">O</span>
+		</h4>
+		<div class="player-box">
+			<p>PICK YOUR MARK</p>
+			<div class="pick-player"> 
+			<p @click="store.choosePlayer('X')">
+				<span :class="{'choosen_player': store.player_choice == 'X'}">X</span>
+				<span class="player-selector" :class="{'go-right': store.player_choice == 'O'}"></span>
+			</p>
+			<p @click="store.choosePlayer('O')">
+				<span :class="{'choosen_player': store.player_choice == 'O'}">O</span>
+			</p>
+			</div>
+			<p>Remeber : X goes first</p>
+		</div>
+		<router-link to="/game"><button class="new-game-btn vs-cpu">NEW GAME (VS CPU)</button></router-link>
+		<router-link to="/game" @click="store.player_2=true"><button class="new-game-btn vs-player2">NEW GAME (VS P2)</button></router-link>
+	</div>
 </template>
 
-<script>
-
-import HomeContainer from "../components/HomeContainer.vue";
-import GameContainer from "../components/GameContainer.vue";
-
-export default {
-	el: '#app',
-	name: 'HomeView',
-	data() {
-		return {
-			home: true,
-			player_choice: 'X',
-			player_2 : false,
-		}
-	},
-	components : {
-		HomeContainer,
-		GameContainer,
-	},
-	methods: {
-		choosePlayer(player_mark) {
-			this.player_choice = player_mark;
-		},
-
-		changePage(p2=false){
-			this.home = false;
-			this.player_2 = p2;
-		},
-	},
-}
+<script setup>
+import { useGameStore } from '@/store/game.js';
+let store = useGameStore ();
 </script>
