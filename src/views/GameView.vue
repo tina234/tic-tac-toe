@@ -46,8 +46,11 @@
 
 <script setup>
 import { useGameStore } from '@/store/game.js';
-import { onMounted, ref, router, h } from 'vue';
+import { onMounted, ref, onBeforeMount } from 'vue';
+import { useRouter } from 'vue-router'
+
 let store = useGameStore();
+const router = useRouter();
 
 let selected_fields = ref({ 
     'X': [],
@@ -146,13 +149,12 @@ const cpuPlay = () => {
         let random_field = available_fields[Math.floor(Math.random() * available_fields.length)];
         setTimeout(() => {
             selectField(random_field);
-        }, 1000);
+        }, 500);
     }
 }
         	
 const quit = () => {
-    refreshGame();
-    restartScore();
+    router.push('/');
 }
 
 const whoWon = () => {
@@ -181,6 +183,13 @@ const get_mark = (field_num) => {
 onMounted (() => {
     if(store.player_choice != player_turn.value && !store.player_2) {
         cpuPlay();
-    }	
+    }
 })
+
+onBeforeMount(() => {
+    if (store.home) {
+        router.push('/');
+    }
+})
+
 </script>

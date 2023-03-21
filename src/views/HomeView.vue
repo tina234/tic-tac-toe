@@ -17,12 +17,22 @@
 			</div>
 			<p>Remeber : X goes first</p>
 		</div>
-		<router-link to="/game"><button class="new-game-btn vs-cpu">NEW GAME (VS CPU)</button></router-link>
-		<router-link to="/game" @click="store.player_2=true"><button class="new-game-btn vs-player2">NEW GAME (VS P2)</button></router-link>
+		<router-link to="/game" @click="startGameVsCpu()"><button class="new-game-btn vs-cpu">NEW GAME (VS CPU)</button></router-link>
+		<router-link to="/game" @click="startGameVsPlayer2()"><button class="new-game-btn vs-player2">NEW GAME (VS P2)</button></router-link>
 	</div>
 </template>
 
 <script setup>
 import { useGameStore } from '@/store/game.js';
 let store = useGameStore ();
+
+const startGameVsCpu = () => {
+	store.player_2 = false;
+	store.home = false;
+}
+
+const startGameVsPlayer2 = () => {
+	store.player_2 = true;
+	store.home = false;
+}
 </script>
